@@ -7,343 +7,24 @@
 # WEB SCRAPING AND DATA ANALYSIS OF IMDB TOP 1000 MOVIES FROM 1921 TO 2021
 
 
-```python
-pip install selenium
-pip install pandas
-pip install numpy
-pip install matplotlib
-pip install seaborn 
-pip install tabulate
 
-```
+## Python Library Used
+  - selenium webdriver
+  - pandas
+  - numpy
+  - matplotlib
+  - seaborn 
+  - tabulate
 
 
 
 
-```python
-from selenium import webdriver
-import time
-```
 
-
-```python
-PATH = "/usr/bin/chromedriver"
-```
-
-
-```python
-driver = webdriver.Chrome(PATH)
-from selenium.webdriver.common.action_chains import ActionChains
-```
-
-## Container for storing the attributes of the dataset
-
-
-```python
-title_name = []
-year = []
-duration = []
-genre = []
-rating = []
-overview = []
-director = []
-image_url = []
-votes = []
-
-```
-
-## Function to add title to list " title_name "
-
-
-```python
-def add_title():
-    title = driver.find_elements_by_class_name('lister-item-header')
-    for i in title:
-        title_name.append(i.find_element_by_tag_name('a').text)
-```
-
-## Function to add year to list " year "
-
-
-```python
-def add_year():
-    yr = driver.find_elements_by_class_name('lister-item-year ')
-    for i in yr:
-        y = int(i.text.replace('(',"").replace(')',"").split()[-1])
-        year.append(y)
-```
-
-## Function to add duration to list " duration "
-
-
-```python
-
-def add_duration():
-    dur = driver.find_elements_by_class_name('runtime')
-    for i in dur:
-        duration.append(int(i.text.split()[0]))
-
-```
-
-## Function to add genre to list " genre "
-
-
-```python
-def add_genre():
-    gen = driver.find_elements_by_class_name('genre')
-    for i in gen:
-        genre.append(i.text)
-```
-
-## Function to add rating to list " rating "
-
-
-```python
-def add_rating():
-    rat = driver.find_elements_by_class_name('ratings-bar')
-    for i in rat:
-        rating.append(float(i.find_element_by_tag_name('strong').text))
-```
-
-## Function to add overview to list " overview "
-
-
-```python
-def add_overview():
-    over = driver.find_elements_by_class_name("lister-item-content")
-    for i in over:
-        overview.append(i.find_elements_by_tag_name("p")[1].text)
-```
-
-## Function to add director to list " director "
-
-
-```python
-def add_director():
-    dir = driver.find_elements_by_class_name("lister-item-content")
-    for i in dir:
-        director.append(i.find_elements_by_tag_name("p")[2].find_element_by_tag_name("a").text)
-```
-
-## Function to add votes to list " votes "
-
-
-```python
-
-def add_votes():
-    vot = driver.find_elements_by_class_name("sort-num_votes-visible")
-    for i in vot:
-        votes.append(int(i.find_elements_by_name("nv")[0].text.replace(',',"")))
-```
-
-## Function to add image url to list " image_url "
-
-
-```python
-def add_image_url():
-    img = driver.find_elements_by_class_name('lister-item-image')
-    for i in img:
-        image_url.append(i.find_element_by_tag_name("img").get_attribute("src"))
-```
-
-# Extracting all the data from the imdb website dynamically
-
-
-```python
-for i in range(10):
-    driver.get(f"https://www.imdb.com/search/title/?groups=top_1000&sort=user_rating,desc&count=100&start={i}01&ref_=adv_nxt")
-    action = ActionChains(driver)
-    add_title()
-    add_year()
-    add_duration()
-    add_genre()
-    add_rating()
-    add_overview()
-    add_director()
-    add_image_url()
-    add_votes()
-    next = driver.find_element_by_link_text("Next »")
-    action.click(next)
-    action.perform()
-    time.sleep(1)
-driver.close()
-```
-
-
-```python
-len(votes)
-```
-
-
-
-
-    1000
-
-
-
-# Creating a dataset using python dataframe
-
-
-```python
-import pandas as pd
-```
-
-
-```python
-movie_dict = {
-"movie-name":title_name,
-"year":year,
-"duration(min)":duration,
-"genre":genre,
-"rating":rating,
-"overview":overview,
-"director":director,
-"image_url": image_url,
-"votes":votes
-}
-```
-
-
-```python
-Movie_df = pd.DataFrame(movie_dict)
-```
-
-
-```python
-Movie_df.head()
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>movie-name</th>
-      <th>year</th>
-      <th>duration(min)</th>
-      <th>genre</th>
-      <th>rating</th>
-      <th>overview</th>
-      <th>director</th>
-      <th>image_url</th>
-      <th>votes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>The Shawshank Redemption</td>
-      <td>1994</td>
-      <td>142</td>
-      <td>Drama</td>
-      <td>9.3</td>
-      <td>Two imprisoned men bond over a number of years...</td>
-      <td>Frank Darabont</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMDFkYT...</td>
-      <td>2429850</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>The Godfather</td>
-      <td>1972</td>
-      <td>175</td>
-      <td>Crime, Drama</td>
-      <td>9.2</td>
-      <td>An organized crime dynasty's aging patriarch t...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/M/MV5BM2MyNj...</td>
-      <td>1682074</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Soorarai Pottru</td>
-      <td>2020</td>
-      <td>153</td>
-      <td>Drama</td>
-      <td>9.1</td>
-      <td>Nedumaaran Rajangam "Maara" sets out to make t...</td>
-      <td>Sudha Kongara</td>
-      <td>https://m.media-amazon.com/images/M/MV5BOGVjYm...</td>
-      <td>85875</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>The Dark Knight</td>
-      <td>2008</td>
-      <td>152</td>
-      <td>Action, Crime, Drama</td>
-      <td>9.0</td>
-      <td>When the menace known as the Joker wreaks havo...</td>
-      <td>Christopher Nolan</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMTMxNT...</td>
-      <td>2385740</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>The Godfather: Part II</td>
-      <td>1974</td>
-      <td>202</td>
-      <td>Crime, Drama</td>
-      <td>9.0</td>
-      <td>The early life and career of Vito Corleone in ...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
-      <td>1167567</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-##  Creating a CSV File 
-
-
-```python
-Movie_df.to_csv("IMDB-Movies-top-1k.csv" , index=None)
-```
-
-
-```python
-
-```
 
 
 # DATA ANALYSIS
 
-# BASIC INSTALLATION OF LIBRARIES 
 
-
-```python
-import pandas as pd
-from IPython.core.display import HTML
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-```
-
-# READING THE DATASET (CSV) USING PANDAS
-
-
-```python
-df_imdb =pd.read_csv('IMDB-Movies-top-1k.csv')
-```
 
 # INTRODUCTORY ANALYSIS OF DATASET
 
@@ -626,31 +307,6 @@ HTML(df_imdb.head(3).to_html(escape=False,formatters=dict(image_url=path_to_imag
 
 
 
-```python
-df_imdb.columns
-```
-
-
-
-
-    Index(['movie-name', 'year', 'duration(min)', 'genre', 'rating', 'overview',
-           'director', 'image_url', 'votes'],
-          dtype='object')
-
-
-
-
-```python
-df_imdb.shape
-```
-
-
-
-
-    (1000, 9)
-
-
-
 
 ```python
 df_imdb.info()
@@ -667,7 +323,7 @@ df_imdb.info()
      6   director       1000 non-null   object 
      7   image_url      1000 non-null   object 
      8   votes          1000 non-null   int64  
-    dtypes: float64(1), int64(3), object(5)
+
 
 
 
@@ -782,338 +438,26 @@ df_imdb.describe()
 
 ```
 
-# CHECK FOR MISSING DATA 
-
-
-```python
-df_imdb.isnull()
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>movie-name</th>
-      <th>year</th>
-      <th>duration(min)</th>
-      <th>genre</th>
-      <th>rating</th>
-      <th>overview</th>
-      <th>director</th>
-      <th>image_url</th>
-      <th>votes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>995</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>996</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>997</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>998</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-    <tr>
-      <th>999</th>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-      <td>False</td>
-    </tr>
-  </tbody>
-</table>
-<p>1000 rows × 9 columns</p>
-</div>
-
-
-
-
-```python
-df_imdb[df_imdb.isnull().any(axis=1)]
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>movie-name</th>
-      <th>year</th>
-      <th>duration(min)</th>
-      <th>genre</th>
-      <th>rating</th>
-      <th>overview</th>
-      <th>director</th>
-      <th>image_url</th>
-      <th>votes</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
-</div>
-
-
-
-### **There is no missing data in the dataset**
-<br>
-<br>
 
 # YEAR ANALYSIS
 
 
-```python
-year_of_release = df_imdb['year']
-year_of_release
-```
-
-
-
-
-    0      1994
-    1      1972
-    2      2020
-    3      2008
-    4      1974
-           ... 
-    995    1961
-    996    1956
-    997    1953
-    998    1953
-    999    1944
-    Name: year, Length: 1000, dtype: int64
 
 
 
 ### graph of year and number of movies
-
-
-```python
-no_movie_years = df_imdb.year.value_counts().sort_index(ascending=False)
-no_movie_years
-```
-
-
-
-
-    2021     3
-    2020     8
-    2019    24
-    2018    20
-    2017    23
-            ..
-    1925     2
-    1924     1
-    1922     1
-    1921     1
-    1920     1
-    Name: year, Length: 100, dtype: int64
-
-
-
-
-```python
-from matplotlib import rcParams
-```
-
-Changing the Defaults: rcParams
-
-Each time Matplotlib loads, it defines a runtime configuration (rc) containing the default styles for every plot element you create. This configuration can be adjusted at any time using the plt.
-
-
-```python
-    rcParams['figure.figsize'] = (80,7)
-    sns.barplot(x=df_imdb.year.value_counts().index , y=df_imdb.year.value_counts())
-    plt.title("year vs number of movies")
-    plt.xlabel("year")
-    plt.ylabel("no of movies")
-```
-
-
-
-
-    Text(0, 0.5, 'no of movies')
-
-
-
 
     
 ![svg](readme/output_63_1.svg)
     
 
 
-## function for graph number of movie vs year
+##  graph of number of movie vs year
 
 
-```python
-def graph_for_movies_number_in_each_year(i,j):
-    x_axis = df_imdb.year.value_counts().sort_index().index[i:j]
-    y_axis = df_imdb.year.value_counts().sort_index()[i:j]
-    sns.barplot(x=x_axis , y=y_axis);
-    plt.title("year vs number of movies")
-    plt.xlabel("year")
-    plt.ylabel("no of movies")
-    sns.set_theme(style="whitegrid")
-    
-```
+
 
 ## First 10 Year Graph
-
-
-```python
-rcParams['figure.figsize'] = (10,7)
-graph_for_movies_number_in_each_year(0,9)
-```
 
 
     
@@ -1125,7 +469,7 @@ graph_for_movies_number_in_each_year(0,9)
 
 
 ```python
-graph_for_movies_number_in_each_year(89,101)
+
 ```
 
 
@@ -1135,22 +479,6 @@ graph_for_movies_number_in_each_year(89,101)
 
 
 
-```python
-df_imdb.year.value_counts().sort_index(ascending=False)[:11].plot.pie(autopct='%1.1f%%' , figsize=(10,10))
-plt.title('LAST TEN YEAR MOVIES WITH %')
-```
-
-
-
-
-    Text(0.5, 1.0, 'LAST TEN YEAR MOVIES WITH %')
-
-
-
-
-    
-![svg](readme/output_70_1.svg)
-    
 
 
 
@@ -1160,10 +488,6 @@ plt.title('LAST TEN YEAR MOVIES WITH %')
 
 # top 10 years with the most number of movie released
 
-
-```python
-df_imdb.year.value_counts().head(10)
-```
 
 
 
@@ -1178,19 +502,13 @@ df_imdb.year.value_counts().head(10)
     2015    25
     2006    25
     2019    24
-    Name: year, dtype: int64
 
 
 
 
-```python
-df_imdb.year.value_counts().head(10).plot.bar(color="g")
-```
 
 
 
-
-    <AxesSubplot:>
 
 
 
@@ -1208,22 +526,12 @@ df_imdb.year.value_counts().head(10).plot.bar(color="g")
 ## MOVIES LIST OF THE YEAR HAVING THE MOST NUMBER OF MOVIES i.e 2004
 
 
-```python
-df_imdb.year.value_counts()[:1]
-```
-
-
 
 
     2004    33
-    Name: year, dtype: int64
+    
 
 
-
-
-```python
-df_imdb[df_imdb['year']==2004]
-```
 
 
 
@@ -1662,23 +970,13 @@ df_imdb[df_imdb['year']==2004]
 
 ## Movies with  maximum and minimum rating in 2004
 
+<br>
 
-```python
-max_rating = df_imdb[df_imdb['year']==2004].rating.max()
-max_rating
-```
-
-
-
+### Maximum rating
 
     8.3
 
 
-
-
-```python
-df_imdb[df_imdb['year']==2004][df_imdb.rating == max_rating]
-```
 
 
 
@@ -1707,9 +1005,7 @@ df_imdb[df_imdb['year']==2004][df_imdb.rating == max_rating]
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -1721,9 +1017,7 @@ df_imdb[df_imdb['year']==2004][df_imdb.rating == max_rating]
       <td>108</td>
       <td>Drama, Romance, Sci-Fi</td>
       <td>8.3</td>
-      <td>When their relationship turns sour, a couple u...</td>
       <td>Michel Gondry</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>938481</td>
     </tr>
   </tbody>
@@ -1734,49 +1028,23 @@ df_imdb[df_imdb['year']==2004][df_imdb.rating == max_rating]
 
 
 ```python
-min_rating = df_imdb[df_imdb['year']==2004].rating.min()
-min_rating
+Minimum rating : 7.6
 ```
 
-
-
-
-    7.6
-
-
-
-
-```python
-df_imdb[df_imdb['year']==2004][df_imdb.rating == min_rating]['movie-name'].to_numpy()
-```
-
-
-    array(["Dead Man's Shoes", 'Saw', 'Mysterious Skin',
-           'A Very Long Engagement', 'The Butterfly Effect'], dtype=object)
+      movies with minimum rating : 
+      - Dead Man's Shoes
+      - Saw
+      - Mysterious Skin
+      - A Very Long Engagement
+      - The Butterfly Effect
 
 
 
 ### Movies with maximum votes in 2004
 
 
-```python
-max_votes = df_imdb[df_imdb['year']==2004].votes.max()
-max_votes
-```
 
-
-
-
-    938481
-
-
-
-
-```python
-df_imdb[df_imdb['year']==2004][df_imdb.votes == max_votes]
-```
-
-
+    max votes : 938481
 
 
 
@@ -1803,9 +1071,7 @@ df_imdb[df_imdb['year']==2004][df_imdb.votes == max_votes]
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -1817,9 +1083,7 @@ df_imdb[df_imdb['year']==2004][df_imdb.votes == max_votes]
       <td>108</td>
       <td>Drama, Romance, Sci-Fi</td>
       <td>8.3</td>
-      <td>When their relationship turns sour, a couple u...</td>
       <td>Michel Gondry</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>938481</td>
     </tr>
   </tbody>
@@ -1833,8 +1097,8 @@ df_imdb[df_imdb['year']==2004][df_imdb.votes == max_votes]
 ## Genre check
 
 
-```python
-df_imdb[df_imdb['year']==2004].genre.value_counts().sort_values(ascending =False)
+```
+    genre with number of movies : 
 ```
 
 
@@ -1877,18 +1141,6 @@ df_imdb[df_imdb['year']==2004].genre.value_counts().sort_values(ascending =False
 ```
 
 # Movies in 2004 with graph
-
-
-```python
-year_with_most_movie_list_movie_name = df_imdb[(df_imdb['year']==2004)]['movie-name']
-year_with_most_movie_list_duration = df_imdb[(df_imdb['year']==2004)]['duration(min)']
-year_with_most_movie_list = {
-    "movie_name of 2004" : year_with_most_movie_list_movie_name,
-    "duration" : year_with_most_movie_list_duration
-}
-year_with_most_movie_list_and_duration = pd.DataFrame(year_with_most_movie_list)
-year_with_most_movie_list_and_duration
-```
 
 
 
@@ -2093,21 +1345,6 @@ year_with_most_movie_list_and_duration
 ```
 
 
-```python
-sns.barplot( y="movie_name of 2004" , x="duration" ,data = year_with_most_movie_list_and_duration )
-plt.title("MOVIES RELEASED IN 2004")
-plt.xlabel("duration in min")
-```
-
-
-
-
-    Text(0.5, 0, 'duration in min')
-
-
-
-
-    
 ![svg](readme/output_94_1.svg)
     
 
@@ -2152,106 +1389,6 @@ So more movies were released with time with the advancement of technology .
 # DURATION ANALYSIS
 
 
-```python
-df_imdb.head()
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>movie-name</th>
-      <th>year</th>
-      <th>duration(min)</th>
-      <th>genre</th>
-      <th>rating</th>
-      <th>overview</th>
-      <th>director</th>
-      <th>image_url</th>
-      <th>votes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>The Shawshank Redemption</td>
-      <td>1994</td>
-      <td>142</td>
-      <td>Drama</td>
-      <td>9.3</td>
-      <td>Two imprisoned men bond over a number of years...</td>
-      <td>Frank Darabont</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMDFkYT...</td>
-      <td>2429850</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>The Godfather</td>
-      <td>1972</td>
-      <td>175</td>
-      <td>Crime, Drama</td>
-      <td>9.2</td>
-      <td>An organized crime dynasty's aging patriarch t...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/M/MV5BM2MyNj...</td>
-      <td>1682074</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Soorarai Pottru</td>
-      <td>2020</td>
-      <td>153</td>
-      <td>Drama</td>
-      <td>9.1</td>
-      <td>Nedumaaran Rajangam "Maara" sets out to make t...</td>
-      <td>Sudha Kongara</td>
-      <td>https://m.media-amazon.com/images/M/MV5BOGVjYm...</td>
-      <td>85875</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>The Dark Knight</td>
-      <td>2008</td>
-      <td>152</td>
-      <td>Action, Crime, Drama</td>
-      <td>9.0</td>
-      <td>When the menace known as the Joker wreaks havo...</td>
-      <td>Christopher Nolan</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMTMxNT...</td>
-      <td>2385740</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>The Godfather: Part II</td>
-      <td>1974</td>
-      <td>202</td>
-      <td>Crime, Drama</td>
-      <td>9.0</td>
-      <td>The early life and career of Vito Corleone in ...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
-      <td>1167567</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 
 
 
@@ -2260,14 +1397,9 @@ df_imdb.head()
 
 ```
 
-## DURATION VS NUMBER OF MOVIES 
+## DURATION VS NUMBER OF MOVIES first 5  
 
 
-```python
-duration_vs_no_of_movies = df_imdb['duration(min)'].value_counts().to_frame().rename_axis("duration in min").reset_index().rename(columns={"duration(min)":"no of movies"})
-
-duration_vs_no_of_movies.head()
-```
 
 
 
@@ -2327,8 +1459,8 @@ duration_vs_no_of_movies.head()
 
 
 
-```python
-duration_vs_no_of_movies.sort_values("no of movies" , ascending=False).head(10)
+```
+duration with number of movies of top 10 duration
 ```
 
 
@@ -2413,24 +1545,13 @@ duration_vs_no_of_movies.sort_values("no of movies" , ascending=False).head(10)
 
 
 
-## Check for average duration of the first 200 movies
-
-
-```python
-average_dur_first_200_movies =  df_imdb.sort_values("year").head(200)['duration(min)'].sum()/df_imdb.sort_values("year").head(200)['duration(min)'].count()
-print("Average duration of the first 200 movies : ",average_dur_first_200_movies , "min")
-```
+## average duration of the first 200 movies
 
     Average duration of the first 200 movies :  115.905 min
 
 
-## Check for average duration of the last 200 movies
+## Average duration of the last 200 movies
 
-
-```python
-average_dur_last_200_movies =  df_imdb.sort_values("year" , ascending=False).head(200)['duration(min)'].sum()/df_imdb.sort_values("year").head(200)['duration(min)'].count()
-print("Average duration of the last 200 movies : ",average_dur_last_200_movies , "min")
-```
 
     Average duration of the last 200 movies :  128.99 min
 
@@ -2443,17 +1564,6 @@ print("Average duration of the last 200 movies : ",average_dur_last_200_movies ,
 ## top 10 duration with the maximum number of movies
 
 
-```python
-fig, ax = plt.subplots(figsize=(10,7))
-sns.barplot(x='duration in min' , y='no of movies' ,data=duration_vs_no_of_movies.sort_values("no of movies",ascending=False).head(10))
-plt.title("top 10 duration with the maximum number of movies")
-```
-
-
-
-
-    Text(0.5, 1.0, 'top 10 duration with the maximum number of movies')
-
 
 
 
@@ -2463,36 +1573,11 @@ plt.title("top 10 duration with the maximum number of movies")
 
 
 
-```python
-
-df_imdb["duration(min)"].value_counts().head(10).plot.pie(autopct='%1.1f%%' , figsize=(10,10))
-plt.legend()
-plt.title("PIE CHART -- Duration(min) vs no of movies ")
-```
 
 
-
-
-    Text(0.5, 1.0, 'PIE CHART -- Duration(min) vs no of movies ')
-
-
-
-
-    
-![svg](readme/output_113_1.svg)
-    
 
 
 ## histogram of duration in min
-
-
-```python
-sns.distplot(df_imdb['duration(min)'], hist=True, kde=False, color ='green', bins=20, rug=True,
-             hist_kws={'edgecolor':'black'})
-plt.ylabel("frequency of movies")
-```
-
-
 
 
     
@@ -2687,7 +1772,6 @@ sns.distplot(df_imdb['duration(min)'], hist=False, rug=True);
 
 
 ```python
-top_ten_movie_with_highest_time[:1]
 ```
 
 
@@ -2716,9 +1800,7 @@ top_ten_movie_with_highest_time[:1]
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -2730,9 +1812,7 @@ top_ten_movie_with_highest_time[:1]
       <td>321</td>
       <td>Action, Crime, Drama</td>
       <td>8.2</td>
-      <td>A clash between Sultan and Shahid Khan leads t...</td>
       <td>Anurag Kashyap</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>87729</td>
     </tr>
   </tbody>
@@ -2741,17 +1821,15 @@ top_ten_movie_with_highest_time[:1]
 
 
 
+<br>
 
 
 
-```python
-top_ten_movie_with_highest_time = df_imdb.sort_values("duration(min)" , ascending=False).head(10)
-sns.barplot(y="movie-name" , x="duration(min)" , data=top_ten_movie_with_highest_time )
-```
+## top ten movie with highest time 
 
 
 
-
+<br>
 
     
 ![svg](readme/output_123_1.svg)
@@ -2761,12 +1839,6 @@ sns.barplot(y="movie-name" , x="duration(min)" , data=top_ten_movie_with_highest
 ## TEN MOVIES WITH LEAST DURATION 
 
 
-```python
-ten_movie_with_LOWEST_time = df_imdb.sort_values("duration(min)" , ascending=True).head(10)
-ten_movie_with_LOWEST_time
-```
-
-
 
 
 <div>
@@ -2792,9 +1864,7 @@ ten_movie_with_LOWEST_time
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -2806,9 +1876,7 @@ ten_movie_with_LOWEST_time
       <td>45</td>
       <td>Action, Comedy, Romance</td>
       <td>8.2</td>
-      <td>A film projectionist longs to be a detective, ...</td>
       <td>Buster Keaton</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>44584</td>
     </tr>
     <tr>
@@ -2818,9 +1886,7 @@ ten_movie_with_LOWEST_time
       <td>64</td>
       <td>Drama, Horror</td>
       <td>7.9</td>
-      <td>A circus' beautiful trapeze artist agrees to m...</td>
       <td>Tod Browning</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>43320</td>
     </tr>
     <tr>
@@ -2830,9 +1896,7 @@ ten_movie_with_LOWEST_time
       <td>66</td>
       <td>Drama, History, Thriller</td>
       <td>8.0</td>
-      <td>In the midst of the Russian Revolution of 1905...</td>
       <td>Sergei M. Eisenstein</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>54736</td>
     </tr>
     <tr>
@@ -2842,9 +1906,7 @@ ten_movie_with_LOWEST_time
       <td>67</td>
       <td>Fantasy, Horror, Mystery</td>
       <td>8.1</td>
-      <td>Hypnotist Dr. Caligari uses a somnambulist, Ce...</td>
       <td>Robert Wiene</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>59336</td>
     </tr>
     <tr>
@@ -2854,9 +1916,7 @@ ten_movie_with_LOWEST_time
       <td>67</td>
       <td>Action, Adventure, Comedy</td>
       <td>8.1</td>
-      <td>When Union spies steal an engineer's beloved l...</td>
       <td>Clyde Bruckman</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>85200</td>
     </tr>
     <tr>
@@ -2866,9 +1926,7 @@ ten_movie_with_LOWEST_time
       <td>68</td>
       <td>Comedy, Drama, Family</td>
       <td>8.3</td>
-      <td>The Tramp cares for an abandoned child, but ev...</td>
       <td>Charles Chaplin</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>117964</td>
     </tr>
     <tr>
@@ -2878,9 +1936,7 @@ ten_movie_with_LOWEST_time
       <td>69</td>
       <td>Comedy, Musical, War</td>
       <td>7.8</td>
-      <td>Rufus T. Firefly is named president/dictator o...</td>
       <td>Leo McCarey</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>58102</td>
     </tr>
     <tr>
@@ -2890,9 +1946,7 @@ ten_movie_with_LOWEST_time
       <td>70</td>
       <td>Drama, Horror, Sci-Fi</td>
       <td>7.8</td>
-      <td>Dr. Frankenstein dares to tamper with life and...</td>
       <td>James Whale</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>67329</td>
     </tr>
     <tr>
@@ -2902,9 +1956,7 @@ ten_movie_with_LOWEST_time
       <td>71</td>
       <td>Horror, Sci-Fi</td>
       <td>7.7</td>
-      <td>A scientist finds a way of becoming invisible,...</td>
       <td>James Whale</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>31912</td>
     </tr>
     <tr>
@@ -2914,9 +1966,7 @@ ten_movie_with_LOWEST_time
       <td>72</td>
       <td>Comedy, Romance</td>
       <td>8.1</td>
-      <td>The Tramp finds work and the girl of his dream...</td>
       <td>Charles Chaplin</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>31435</td>
     </tr>
   </tbody>
@@ -2924,13 +1974,12 @@ ten_movie_with_LOWEST_time
 </div>
 
 
+<br>
 
 
-```python
-min_duration_movie = ten_movie_with_LOWEST_time[:1]
-min_duration_movie
-```
+## Min duration movie
 
+<br>
 
 
 
@@ -2957,9 +2006,7 @@ min_duration_movie
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -2971,9 +2018,7 @@ min_duration_movie
       <td>45</td>
       <td>Action, Comedy, Romance</td>
       <td>8.2</td>
-      <td>A film projectionist longs to be a detective, ...</td>
       <td>Buster Keaton</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>44584</td>
     </tr>
   </tbody>
@@ -2984,7 +2029,6 @@ min_duration_movie
 
 
 ```python
-sns.barplot(y="movie-name" , x="duration(min)" , data=ten_movie_with_LOWEST_time )
 ```
 
 
@@ -3011,109 +2055,10 @@ sns.barplot(y="movie-name" , x="duration(min)" , data=ten_movie_with_LOWEST_time
 - Gangs of Wasseypur has the maximum duration of 321 minutes released in 2012
 and Sherlock Jr. Is the movie having the minimum duration of 45 minutes.
 
+<br><br><br>
+
 # ANALYSIS BASED ON GENRES
 
-
-```python
-df_imdb.head()
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>movie-name</th>
-      <th>year</th>
-      <th>duration(min)</th>
-      <th>genre</th>
-      <th>rating</th>
-      <th>overview</th>
-      <th>director</th>
-      <th>image_url</th>
-      <th>votes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>The Shawshank Redemption</td>
-      <td>1994</td>
-      <td>142</td>
-      <td>Drama</td>
-      <td>9.3</td>
-      <td>Two imprisoned men bond over a number of years...</td>
-      <td>Frank Darabont</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMDFkYT...</td>
-      <td>2429850</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>The Godfather</td>
-      <td>1972</td>
-      <td>175</td>
-      <td>Crime, Drama</td>
-      <td>9.2</td>
-      <td>An organized crime dynasty's aging patriarch t...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/M/MV5BM2MyNj...</td>
-      <td>1682074</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Soorarai Pottru</td>
-      <td>2020</td>
-      <td>153</td>
-      <td>Drama</td>
-      <td>9.1</td>
-      <td>Nedumaaran Rajangam "Maara" sets out to make t...</td>
-      <td>Sudha Kongara</td>
-      <td>https://m.media-amazon.com/images/M/MV5BOGVjYm...</td>
-      <td>85875</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>The Dark Knight</td>
-      <td>2008</td>
-      <td>152</td>
-      <td>Action, Crime, Drama</td>
-      <td>9.0</td>
-      <td>When the menace known as the Joker wreaks havo...</td>
-      <td>Christopher Nolan</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMTMxNT...</td>
-      <td>2385740</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>The Godfather: Part II</td>
-      <td>1974</td>
-      <td>202</td>
-      <td>Crime, Drama</td>
-      <td>9.0</td>
-      <td>The early life and career of Vito Corleone in ...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
-      <td>1167567</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 
 
 
@@ -3121,8 +2066,6 @@ df_imdb.head()
 
 
 ```python
-df_genre_count = df_imdb.genre.value_counts().reset_index().rename(columns={"index":"genre" , "genre":"count"})
-df_genre_count.head(20)
 ```
 
 
@@ -3258,16 +2201,9 @@ df_genre_count.head(20)
 
 
 
-```python
-sns.barplot( x="count" , y='genre' , data=df_genre_count.head(20))
-plt.xlabel("number of movies")
-plt.title("GENRE vs NUMBER OF MOVIES")
-```
 
 
-
-
-    Text(0.5, 1.0, 'GENRE vs NUMBER OF MOVIES')
+    GENRE vs NUMBER OF MOVIES
 
 
 
@@ -3280,23 +2216,13 @@ plt.title("GENRE vs NUMBER OF MOVIES")
 ## analysis for movies with genre DRAMA only
 
 
-```python
-df_no_of_movies_drama = df_imdb['genre'].str.contains("Drama").fillna(False)
-print('Number of movies with Drama','=',len(df_imdb[df_no_of_movies_drama]))
-```
 
     Number of movies with Drama = 723
 
 
 ## number of movies in a year having genre  DRAMA 
 
-
-```python
-df_movies_with_genre_drama = df_imdb[df_no_of_movies_drama].year.value_counts().to_frame().rename_axis("yr").reset_index().rename(columns={"year":"count"})
-df_movies_with_genre_drama.head()
-```
-
-
+<br><br>
 
 
 <div>
@@ -3351,47 +2277,16 @@ df_movies_with_genre_drama.head()
 </table>
 </div>
 
-
-
-
-```python
-fig, ax = plt.subplots(figsize=(60,7))
-sns.barplot(x="yr" , y="count" , data=df_movies_with_genre_drama ,palette="nipy_spectral" )
-```
-
-
-
-
-    <AxesSubplot:xlabel='yr', ylabel='count'>
-
-
-
-
-    
-![svg](readme/output_140_1.svg)
+<br>
+<br><br>
     
 
 
 ## Ten years with the most number of movies having genre as drama
 
-
-```python
-fig, ax = plt.subplots(figsize=(15,7))
-sns.barplot(x="yr" , y="count" , data=df_movies_with_genre_drama.head(10) ,palette="viridis_r" )
-plt.title("Ten years with the most number of movies having genre as drama")
-plt.xlabel("years")
-plt.ylabel("number of movies")
-```
+<br><br>
 
 
-
-
-    Text(0, 0.5, 'number of movies')
-
-
-
-
-    
 ![svg](readme/output_142_1.svg)
     
 
@@ -3407,106 +2302,6 @@ plt.ylabel("number of movies")
 # RATING ANALYSIS
 
 
-```python
-df_imdb.head()
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>movie-name</th>
-      <th>year</th>
-      <th>duration(min)</th>
-      <th>genre</th>
-      <th>rating</th>
-      <th>overview</th>
-      <th>director</th>
-      <th>image_url</th>
-      <th>votes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>The Shawshank Redemption</td>
-      <td>1994</td>
-      <td>142</td>
-      <td>Drama</td>
-      <td>9.3</td>
-      <td>Two imprisoned men bond over a number of years...</td>
-      <td>Frank Darabont</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMDFkYT...</td>
-      <td>2429850</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>The Godfather</td>
-      <td>1972</td>
-      <td>175</td>
-      <td>Crime, Drama</td>
-      <td>9.2</td>
-      <td>An organized crime dynasty's aging patriarch t...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/M/MV5BM2MyNj...</td>
-      <td>1682074</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Soorarai Pottru</td>
-      <td>2020</td>
-      <td>153</td>
-      <td>Drama</td>
-      <td>9.1</td>
-      <td>Nedumaaran Rajangam "Maara" sets out to make t...</td>
-      <td>Sudha Kongara</td>
-      <td>https://m.media-amazon.com/images/M/MV5BOGVjYm...</td>
-      <td>85875</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>The Dark Knight</td>
-      <td>2008</td>
-      <td>152</td>
-      <td>Action, Crime, Drama</td>
-      <td>9.0</td>
-      <td>When the menace known as the Joker wreaks havo...</td>
-      <td>Christopher Nolan</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMTMxNT...</td>
-      <td>2385740</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>The Godfather: Part II</td>
-      <td>1974</td>
-      <td>202</td>
-      <td>Crime, Drama</td>
-      <td>9.0</td>
-      <td>The early life and career of Vito Corleone in ...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
-      <td>1167567</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 
 
 
@@ -3514,8 +2309,6 @@ df_imdb.head()
 
 
 ```python
-movies_greater_than_nine = df_imdb.query('rating >=9')
-movies_greater_than_nine
 ```
 
 
@@ -3544,9 +2337,7 @@ movies_greater_than_nine
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -3558,9 +2349,7 @@ movies_greater_than_nine
       <td>142</td>
       <td>Drama</td>
       <td>9.3</td>
-      <td>Two imprisoned men bond over a number of years...</td>
       <td>Frank Darabont</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMDFkYT...</td>
       <td>2429850</td>
     </tr>
     <tr>
@@ -3570,9 +2359,7 @@ movies_greater_than_nine
       <td>175</td>
       <td>Crime, Drama</td>
       <td>9.2</td>
-      <td>An organized crime dynasty's aging patriarch t...</td>
       <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/M/MV5BM2MyNj...</td>
       <td>1682074</td>
     </tr>
     <tr>
@@ -3582,9 +2369,7 @@ movies_greater_than_nine
       <td>153</td>
       <td>Drama</td>
       <td>9.1</td>
-      <td>Nedumaaran Rajangam "Maara" sets out to make t...</td>
       <td>Sudha Kongara</td>
-      <td>https://m.media-amazon.com/images/M/MV5BOGVjYm...</td>
       <td>85875</td>
     </tr>
     <tr>
@@ -3594,9 +2379,7 @@ movies_greater_than_nine
       <td>152</td>
       <td>Action, Crime, Drama</td>
       <td>9.0</td>
-      <td>When the menace known as the Joker wreaks havo...</td>
       <td>Christopher Nolan</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMTMxNT...</td>
       <td>2385740</td>
     </tr>
     <tr>
@@ -3606,9 +2389,7 @@ movies_greater_than_nine
       <td>202</td>
       <td>Crime, Drama</td>
       <td>9.0</td>
-      <td>The early life and career of Vito Corleone in ...</td>
       <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>1167567</td>
     </tr>
     <tr>
@@ -3618,9 +2399,7 @@ movies_greater_than_nine
       <td>96</td>
       <td>Crime, Drama</td>
       <td>9.0</td>
-      <td>A jury holdout attempts to prevent a miscarria...</td>
       <td>Sidney Lumet</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>717295</td>
     </tr>
   </tbody>
@@ -3631,24 +2410,21 @@ movies_greater_than_nine
 
 
 ```python
-print("Number of movies with rating >=9 : " ,movies_greater_than_nine['rating'].count());
-
 ```
 
-    Number of movies with rating >=9 :  6
+    Number of movies with rating greater than or equal to 9 :  6
 
 
 
 ```python
-movies_greater_than_nine.plot.bar(x="movie-name" , y="rating" , color="r")
-plt.title("movies with rating greater than or eual to 9")
+
 
 ```
 
 
 
 
-    Text(0.5, 1.0, 'movies with rating greater than or eual to 9')
+## movies with rating greater than or equal to 9
 
 
 
@@ -3661,9 +2437,6 @@ plt.title("movies with rating greater than or eual to 9")
 ## Movie with maximum rating
 
 
-```python
-df_imdb[df_imdb.rating == df_imdb.rating.max()]
-```
 
 
 
@@ -3691,9 +2464,7 @@ df_imdb[df_imdb.rating == df_imdb.rating.max()]
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -3705,27 +2476,12 @@ df_imdb[df_imdb.rating == df_imdb.rating.max()]
       <td>142</td>
       <td>Drama</td>
       <td>9.3</td>
-      <td>Two imprisoned men bond over a number of years...</td>
       <td>Frank Darabont</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMDFkYT...</td>
       <td>2429850</td>
     </tr>
   </tbody>
 </table>
 </div>
-
-
-
-
-```python
-sns.barplot( y="movie-name" , x="rating" ,hue="votes", data=df_imdb[df_imdb.rating == df_imdb.rating.max()] , palette="rocket"  )
-```
-
-
-
-
-    <AxesSubplot:xlabel='rating', ylabel='movie-name'>
-
 
 
 
@@ -3736,10 +2492,8 @@ sns.barplot( y="movie-name" , x="rating" ,hue="votes", data=df_imdb[df_imdb.rati
 
 ## Movie with least rating
 
-
 ```python
 
-df_imdb[df_imdb.rating == df_imdb.rating.min()].head()
 ```
 
 
@@ -3768,9 +2522,7 @@ df_imdb[df_imdb.rating == df_imdb.rating.min()].head()
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -3782,9 +2534,7 @@ df_imdb[df_imdb.rating == df_imdb.rating.min()].head()
       <td>126</td>
       <td>Biography, Drama, History</td>
       <td>7.6</td>
-      <td>A corporate defense attorney takes on an envir...</td>
       <td>Todd Haynes</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>70337</td>
     </tr>
     <tr>
@@ -3794,9 +2544,7 @@ df_imdb[df_imdb.rating == df_imdb.rating.min()].head()
       <td>102</td>
       <td>Drama, Mystery, Thriller</td>
       <td>7.6</td>
-      <td>After his teenage daughter goes missing, a des...</td>
       <td>Aneesh Chaganty</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>148715</td>
     </tr>
     <tr>
@@ -3806,9 +2554,7 @@ df_imdb[df_imdb.rating == df_imdb.rating.min()].head()
       <td>161</td>
       <td>Comedy, Drama</td>
       <td>7.6</td>
-      <td>A faded television actor and his stunt double ...</td>
       <td>Quentin Tarantino</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>611066</td>
     </tr>
     <tr>
@@ -3818,9 +2564,7 @@ df_imdb[df_imdb.rating == df_imdb.rating.min()].head()
       <td>127</td>
       <td>Drama</td>
       <td>7.6</td>
-      <td>A couple going through a divorce must team up ...</td>
       <td>Andrey Zvyagintsev</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>31175</td>
     </tr>
     <tr>
@@ -3830,9 +2574,7 @@ df_imdb[df_imdb.rating == df_imdb.rating.min()].head()
       <td>118</td>
       <td>Action, Horror, Thriller</td>
       <td>7.6</td>
-      <td>While a zombie virus breaks out in South Korea...</td>
       <td>Sang-ho Yeon</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>181787</td>
     </tr>
   </tbody>
@@ -3844,8 +2586,6 @@ df_imdb[df_imdb.rating == df_imdb.rating.min()].head()
 
 ```python
 
-movie_no_with_lowest_rating = df_imdb[df_imdb.rating == df_imdb.rating.min()]['rating'].count()
-print("Number of movies with lowest rating of ",df_imdb.rating.min(),": " ,movie_no_with_lowest_rating  )
 ```
 
     Number of movies with lowest rating of  7.6 :  108
@@ -3855,7 +2595,6 @@ print("Number of movies with lowest rating of ",df_imdb.rating.min(),": " ,movie
 
 
 ```python
-sns.distplot(df_imdb['rating'] ,hist=False, color ='green', bins=20, rug=True);
 ```
 
 
@@ -3869,8 +2608,6 @@ sns.distplot(df_imdb['rating'] ,hist=False, color ='green', bins=20, rug=True);
 
 
 ```python
-df_count_rating = df_imdb.rating.value_counts().to_frame().reset_index().rename(columns={"index":"rating" , "rating":"count"})
-df_count_rating.head(10)
 ```
 
 
@@ -3895,7 +2632,7 @@ df_count_rating.head(10)
     <tr style="text-align: right;">
       <th></th>
       <th>rating</th>
-      <th>count</th>
+      <th>number of movies</th>
     </tr>
   </thead>
   <tbody>
@@ -3957,16 +2694,12 @@ df_count_rating.head(10)
 
 
 ```python
-fig ,ax = plt.subplots(figsize=(15,7))
-sns.barplot(x="rating" , y="count", data=df_count_rating)
-plt.ylabel("number of movies")
 ```
 
 
 
 
-    Text(0, 0.5, 'number of movies')
-
+                      number of movie vs rating 
 
 
 
@@ -3985,119 +2718,17 @@ plt.ylabel("number of movies")
 - A total of 164 movie are having 7.7 rating 
 - 108 are having the lowest rating of 7.6
 
+<br><br><br>
 
 # DIRECTOR ANALYSIS 
 
 
-```python
-df_imdb.head()
-```
 
 
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>movie-name</th>
-      <th>year</th>
-      <th>duration(min)</th>
-      <th>genre</th>
-      <th>rating</th>
-      <th>overview</th>
-      <th>director</th>
-      <th>image_url</th>
-      <th>votes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>The Shawshank Redemption</td>
-      <td>1994</td>
-      <td>142</td>
-      <td>Drama</td>
-      <td>9.3</td>
-      <td>Two imprisoned men bond over a number of years...</td>
-      <td>Frank Darabont</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMDFkYT...</td>
-      <td>2429850</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>The Godfather</td>
-      <td>1972</td>
-      <td>175</td>
-      <td>Crime, Drama</td>
-      <td>9.2</td>
-      <td>An organized crime dynasty's aging patriarch t...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/M/MV5BM2MyNj...</td>
-      <td>1682074</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>Soorarai Pottru</td>
-      <td>2020</td>
-      <td>153</td>
-      <td>Drama</td>
-      <td>9.1</td>
-      <td>Nedumaaran Rajangam "Maara" sets out to make t...</td>
-      <td>Sudha Kongara</td>
-      <td>https://m.media-amazon.com/images/M/MV5BOGVjYm...</td>
-      <td>85875</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>The Dark Knight</td>
-      <td>2008</td>
-      <td>152</td>
-      <td>Action, Crime, Drama</td>
-      <td>9.0</td>
-      <td>When the menace known as the Joker wreaks havo...</td>
-      <td>Christopher Nolan</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMTMxNT...</td>
-      <td>2385740</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>The Godfather: Part II</td>
-      <td>1974</td>
-      <td>202</td>
-      <td>Crime, Drama</td>
-      <td>9.0</td>
-      <td>The early life and career of Vito Corleone in ...</td>
-      <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
-      <td>1167567</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-## top 10 director with the most number of movies
+## top 5 director with the most number of movies
 
 
 ```python
-df_top_director = df_imdb.director.value_counts().reset_index().rename(columns={"index":"director" , "director":"count"})
-df_top_director.head()
 ```
 
 
@@ -4122,7 +2753,7 @@ df_top_director.head()
     <tr style="text-align: right;">
       <th></th>
       <th>director</th>
-      <th>count</th>
+      <th>number of movies</th>
     </tr>
   </thead>
   <tbody>
@@ -4155,26 +2786,11 @@ df_top_director.head()
 </table>
 </div>
 
-
+<br><br>
 
 ## Top ten director with the most number of movies
 
-
-```python
-fig ,ax = plt.subplots(figsize=(17,6))
-sns.scatterplot(y="count" , x="director"  , data=df_top_director.head(10) , color="red")
-plt.ylabel("number of movies")
-plt.title("TOP TEN DIRECTORS WITH THE MOST NUMBER OF MOVIES")
-```
-
-
-
-
-    Text(0.5, 1.0, 'TOP TEN DIRECTORS WITH THE MOST NUMBER OF MOVIES')
-
-
-
-
+<br>
     
 ![svg](readme/output_167_1.svg)
     
@@ -4184,7 +2800,6 @@ plt.title("TOP TEN DIRECTORS WITH THE MOST NUMBER OF MOVIES")
 
 
 ```python
-df_top_director.head(1)
 ```
 
 
@@ -4209,7 +2824,7 @@ df_top_director.head(1)
     <tr style="text-align: right;">
       <th></th>
       <th>director</th>
-      <th>count</th>
+      <th>number of movie</th>
     </tr>
   </thead>
   <tbody>
@@ -4226,21 +2841,9 @@ df_top_director.head(1)
 
 
 ```python
-df_AH = df_imdb[df_imdb.director=="Alfred Hitchcock"]
-df_copied_df_AH = df_AH.copy()
-df_cleaned_AH = df_copied_df_AH.drop(['overview' ,'director' , 'image_url' ] , axis=1)
 ```
 
 
-
-
-
-
-```python
-from tabulate import tabulate
-print( "\n\n\t\t\t\tMOVIES DIRECTED BY Alfred Hitchcock")
-print(tabulate(df_cleaned_AH, headers = 'keys', tablefmt = 'fancy_grid' , showindex="never"))
-```
 
     
     
@@ -4279,10 +2882,7 @@ print(tabulate(df_cleaned_AH, headers = 'keys', tablefmt = 'fancy_grid' , showin
 
 
 
-```python
-sns.jointplot(x="rating" , y="votes" , data=df_cleaned_AH , color="green" , label="RATING and VOTES of Alfred Hitchcock")
-print("This is jointplot graph that shows the relation between rating and number of votes")
-```
+<br><br>
 
 ## This is jointplot graph that shows the relation between rating and number of votes
 
@@ -4302,30 +2902,10 @@ print("This is jointplot graph that shows the relation between rating and number
 
 
 ```python
-no_of_movie_by_CN = df_imdb.director.value_counts()["Christopher Nolan"]
-print(f"Number of movies Directed by Christopher Nolan :  {no_of_movie_by_CN}"  )
 ```
 
     Number of movies Directed by Christopher Nolan :  8
 
-
-
-```python
-df_CN = df_imdb[df_imdb.director=="Christopher Nolan"]
-df_copied_df_CN = df_CN.copy()
-```
-
-
-```python
-df_cleaned = df_copied_df_CN.drop(['overview' ,'director' , 'image_url' ] , axis=1)
-```
-
-
-```python
-
-print( "\n\n\t\t\t\tMOVIES DIRECTED BY CHRISTOPHER NOLAN")
-print(tabulate(df_cleaned, headers = 'keys', tablefmt = 'fancy_grid' , showindex="never"))
-```
 
     
     
@@ -4377,8 +2957,6 @@ Total 14 movies were directed by him.
 
 
 ```python
-df_top_ten_most_voted_movie = df_imdb.sort_values('votes' , ascending=False).head(10)
-df_top_ten_most_voted_movie
 ```
 
 
@@ -4546,12 +3124,6 @@ df_top_ten_most_voted_movie
 ```
 
 
-```python
-df_votes = df_imdb.sort_values('votes' , ascending=False).copy()
-df_copied_for_votes = df_votes.drop(["overview" , "image_url" , 'genre'] , axis=1)
-print( "\n\n\t\t\t\t\tTOP TEN MOVIES WITH THE HIGHEST NUMBER OF VOTES")
-print(tabulate(df_copied_for_votes[:10], headers = 'keys', tablefmt = 'fancy_grid' , showindex="never"))
-```
 
     
     
@@ -4585,7 +3157,6 @@ print(tabulate(df_copied_for_votes[:10], headers = 'keys', tablefmt = 'fancy_gri
 
 
 ```python
-df_imdb[df_imdb.votes == df_imdb.votes.max()]
 ```
 
 
@@ -4614,9 +3185,7 @@ df_imdb[df_imdb.votes == df_imdb.votes.max()]
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -4628,9 +3197,7 @@ df_imdb[df_imdb.votes == df_imdb.votes.max()]
       <td>142</td>
       <td>Drama</td>
       <td>9.3</td>
-      <td>Two imprisoned men bond over a number of years...</td>
       <td>Frank Darabont</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMDFkYT...</td>
       <td>2429850</td>
     </tr>
   </tbody>
@@ -4643,7 +3210,6 @@ df_imdb[df_imdb.votes == df_imdb.votes.max()]
 
 
 ```python
-df_imdb[df_imdb.votes == df_imdb.votes.min()]
 ```
 
 
@@ -4672,9 +3238,7 @@ df_imdb[df_imdb.votes == df_imdb.votes.min()]
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -4686,9 +3250,7 @@ df_imdb[df_imdb.votes == df_imdb.votes.min()]
       <td>132</td>
       <td>Comedy, Drama</td>
       <td>7.9</td>
-      <td>A couple from Chandni Chowk aspire to give the...</td>
       <td>Saket Chaudhary</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>25174</td>
     </tr>
   </tbody>
@@ -4703,19 +3265,6 @@ df_imdb[df_imdb.votes == df_imdb.votes.min()]
 ```
 
 
-```python
-ax = plt.subplots(figsize=(10,7))
-sns.barplot(y="movie-name", x="votes", data=df_copied_for_votes[:11] , palette="CMRmap_r");
-plt.title("TOP TEN MOVIES WITH THE HIGHEST NUMBER OF VOTES")
-```
-
-
-
-
-    Text(0.5, 1.0, 'TOP TEN MOVIES WITH THE HIGHEST NUMBER OF VOTES')
-
-
-
 
     
 ![svg](readme/output_192_1.svg)
@@ -4724,7 +3273,6 @@ plt.title("TOP TEN MOVIES WITH THE HIGHEST NUMBER OF VOTES")
 
 
 ```python
-df_top_ten_most_voted_movie
 ```
 
 
@@ -4753,9 +3301,7 @@ df_top_ten_most_voted_movie
       <th>duration(min)</th>
       <th>genre</th>
       <th>rating</th>
-      <th>overview</th>
       <th>director</th>
-      <th>image_url</th>
       <th>votes</th>
     </tr>
   </thead>
@@ -4767,9 +3313,7 @@ df_top_ten_most_voted_movie
       <td>142</td>
       <td>Drama</td>
       <td>9.3</td>
-      <td>Two imprisoned men bond over a number of years...</td>
       <td>Frank Darabont</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMDFkYT...</td>
       <td>2429850</td>
     </tr>
     <tr>
@@ -4779,9 +3323,7 @@ df_top_ten_most_voted_movie
       <td>152</td>
       <td>Action, Crime, Drama</td>
       <td>9.0</td>
-      <td>When the menace known as the Joker wreaks havo...</td>
       <td>Christopher Nolan</td>
-      <td>https://m.media-amazon.com/images/M/MV5BMTMxNT...</td>
       <td>2385740</td>
     </tr>
     <tr>
@@ -4791,9 +3333,7 @@ df_top_ten_most_voted_movie
       <td>148</td>
       <td>Action, Adventure, Sci-Fi</td>
       <td>8.8</td>
-      <td>A thief who steals corporate secrets through t...</td>
       <td>Christopher Nolan</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>2141317</td>
     </tr>
     <tr>
@@ -4803,9 +3343,7 @@ df_top_ten_most_voted_movie
       <td>139</td>
       <td>Drama</td>
       <td>8.8</td>
-      <td>An insomniac office worker and a devil-may-car...</td>
       <td>David Fincher</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>1916428</td>
     </tr>
     <tr>
@@ -4815,9 +3353,7 @@ df_top_ten_most_voted_movie
       <td>154</td>
       <td>Crime, Drama</td>
       <td>8.9</td>
-      <td>The lives of two mob hitmen, a boxer, a gangst...</td>
       <td>Quentin Tarantino</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>1885285</td>
     </tr>
     <tr>
@@ -4827,9 +3363,7 @@ df_top_ten_most_voted_movie
       <td>142</td>
       <td>Drama, Romance</td>
       <td>8.8</td>
-      <td>The presidencies of Kennedy and Johnson, the V...</td>
       <td>Robert Zemeckis</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>1878044</td>
     </tr>
     <tr>
@@ -4839,9 +3373,7 @@ df_top_ten_most_voted_movie
       <td>136</td>
       <td>Action, Sci-Fi</td>
       <td>8.7</td>
-      <td>When a beautiful stranger leads computer hacke...</td>
       <td>Lana Wachowski</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>1730705</td>
     </tr>
     <tr>
@@ -4851,9 +3383,7 @@ df_top_ten_most_voted_movie
       <td>178</td>
       <td>Action, Adventure, Drama</td>
       <td>8.8</td>
-      <td>A meek Hobbit from the Shire and eight compani...</td>
       <td>Peter Jackson</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>1711745</td>
     </tr>
     <tr>
@@ -4863,9 +3393,7 @@ df_top_ten_most_voted_movie
       <td>201</td>
       <td>Action, Adventure, Drama</td>
       <td>8.9</td>
-      <td>Gandalf and Aragorn lead the World of Men agai...</td>
       <td>Peter Jackson</td>
-      <td>https://m.media-amazon.com/images/S/sash/4Fyxw...</td>
       <td>1690502</td>
     </tr>
     <tr>
@@ -4875,9 +3403,7 @@ df_top_ten_most_voted_movie
       <td>175</td>
       <td>Crime, Drama</td>
       <td>9.2</td>
-      <td>An organized crime dynasty's aging patriarch t...</td>
       <td>Francis Ford Coppola</td>
-      <td>https://m.media-amazon.com/images/M/MV5BM2MyNj...</td>
       <td>1682074</td>
     </tr>
   </tbody>
@@ -4890,18 +3416,18 @@ df_top_ten_most_voted_movie
 
 
 ```python
-sns.jointplot(x="rating", y="votes", data=df_top_ten_most_voted_movie, color="orange" , label="MOVIES WITH HIGH RATING , VOTES")
-print("This jointplot graph shows the relation between rating and number of votes of the top ten movies with the highest number of votes.")
 ```
 
 ## This jointplot graph shows the relation between rating and number of votes of the top ten movies with the highest number of votes.
 
+<br>
 
 
     
 ![svg](readme/output_195_1.svg)
     
-
+<br>
+<br>
 
 ## Insights from the votes column
 
