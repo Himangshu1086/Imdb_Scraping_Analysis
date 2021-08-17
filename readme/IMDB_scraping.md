@@ -1,9 +1,3 @@
-# Imdb_Scraping_Analysis
-
-<br>
-<br>
-<br>
-
 # WEB SCRAPING AND DATA ANALYSIS OF IMDB TOP 1000 MOVIES FROM 1921 TO 2021
 
 
@@ -1088,7 +1082,7 @@ Each time Matplotlib loads, it defines a runtime configuration (rc) containing t
 
 
     
-![svg](readme/output_63_1.svg)
+![svg](output_63_1.svg)
     
 
 
@@ -1117,7 +1111,7 @@ graph_for_movies_number_in_each_year(0,9)
 
 
     
-![svg](readme/output_67_0.svg)
+![svg](output_67_0.svg)
     
 
 
@@ -1130,7 +1124,7 @@ graph_for_movies_number_in_each_year(89,101)
 
 
     
-![svg](readme/output_69_0.svg)
+![svg](output_69_0.svg)
     
 
 
@@ -1149,7 +1143,7 @@ plt.title('LAST TEN YEAR MOVIES WITH %')
 
 
     
-![svg](readme/output_70_1.svg)
+![svg](output_70_1.svg)
     
 
 
@@ -1196,7 +1190,7 @@ df_imdb.year.value_counts().head(10).plot.bar(color="g")
 
 
     
-![svg](readme/output_74_1.svg)
+![svg](output_74_1.svg)
     
 
 
@@ -2108,7 +2102,7 @@ plt.xlabel("duration in min")
 
 
     
-![svg](readme/output_94_1.svg)
+![svg](output_94_1.svg)
     
 
 
@@ -2458,7 +2452,7 @@ plt.title("top 10 duration with the maximum number of movies")
 
 
     
-![svg](readme/output_112_1.svg)
+![svg](output_112_1.svg)
     
 
 
@@ -2479,7 +2473,7 @@ plt.title("PIE CHART -- Duration(min) vs no of movies ")
 
 
     
-![svg](readme/output_113_1.svg)
+![svg](output_113_1.svg)
     
 
 
@@ -2496,7 +2490,7 @@ plt.ylabel("frequency of movies")
 
 
     
-![svg](readme/output_115_2.svg)
+![svg](output_115_2.svg)
     
 
 
@@ -2509,7 +2503,7 @@ sns.distplot(df_imdb['duration(min)'], hist=False, rug=True);
 
 
     
-![svg](readme/output_116_1.svg)
+![svg](output_116_1.svg)
     
 
 
@@ -2754,7 +2748,7 @@ sns.barplot(y="movie-name" , x="duration(min)" , data=top_ten_movie_with_highest
 
 
     
-![svg](readme/output_123_1.svg)
+![svg](output_123_1.svg)
     
 
 
@@ -2993,7 +2987,7 @@ sns.barplot(y="movie-name" , x="duration(min)" , data=ten_movie_with_LOWEST_time
 
 
     
-![svg](readme/output_127_1.svg)
+![svg](output_127_1.svg)
     
 
 
@@ -3273,7 +3267,7 @@ plt.title("GENRE vs NUMBER OF MOVIES")
 
 
     
-![svg](readme/output_135_1.svg)
+![svg](output_135_1.svg)
     
 
 
@@ -3368,7 +3362,7 @@ sns.barplot(x="yr" , y="count" , data=df_movies_with_genre_drama ,palette="nipy_
 
 
     
-![svg](readme/output_140_1.svg)
+![svg](output_140_1.svg)
     
 
 
@@ -3392,7 +3386,7 @@ plt.ylabel("number of movies")
 
 
     
-![svg](readme/output_142_1.svg)
+![svg](output_142_1.svg)
     
 
 
@@ -3654,7 +3648,7 @@ plt.title("movies with rating greater than or eual to 9")
 
 
     
-![svg](readme/output_150_1.svg)
+![svg](output_150_1.svg)
     
 
 
@@ -3730,7 +3724,7 @@ sns.barplot( y="movie-name" , x="rating" ,hue="votes", data=df_imdb[df_imdb.rati
 
 
     
-![svg](readme/output_153_1.svg)
+![svg](output_153_1.svg)
     
 
 
@@ -3863,7 +3857,7 @@ sns.distplot(df_imdb['rating'] ,hist=False, color ='green', bins=20, rug=True);
 
 
     
-![svg](readme/output_158_1.svg)
+![svg](output_158_1.svg)
     
 
 
@@ -3971,7 +3965,7 @@ plt.ylabel("number of movies")
 
 
     
-![svg](readme/output_160_1.svg)
+![svg](output_160_1.svg)
     
 
 
@@ -4176,7 +4170,7 @@ plt.title("TOP TEN DIRECTORS WITH THE MOST NUMBER OF MOVIES")
 
 
     
-![svg](readme/output_167_1.svg)
+![svg](output_167_1.svg)
     
 
 
@@ -4289,7 +4283,7 @@ print("This is jointplot graph that shows the relation between rating and number
 
 
     
-![svg](readme/output_173_1.svg)
+![svg](output_173_1.svg)
     
 
 
@@ -4718,7 +4712,7 @@ plt.title("TOP TEN MOVIES WITH THE HIGHEST NUMBER OF VOTES")
 
 
     
-![svg](readme/output_192_1.svg)
+![svg](output_192_1.svg)
     
 
 
@@ -4899,7 +4893,7 @@ print("This jointplot graph shows the relation between rating and number of vote
 
 
     
-![svg](readme/output_195_1.svg)
+![svg](output_195_1.svg)
     
 
 
@@ -4916,4 +4910,3 @@ print("This jointplot graph shows the relation between rating and number of vote
 - The reason behind may be because the most voted movies are released in the most recent so with the involvement of science and technolgy people are more interact with the cinema world and another may be the population which increases with time.
 
 - Taking a example the movie " **The God Father** " released in 1972 is having  a rating of 9.2  has less number of votes than the movie " **inception** " ( 2010 ) which has a rating of 8.8.
-
